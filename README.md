@@ -25,3 +25,4 @@ Pravidla:
   - Pravý tým / hráč mačká tlačítko + na numerické klávenici nebo klávesu Backspace
   - Levý tým / hráč mačká tlačítko Levý Shift
 - Po spojení všech tří stěn trojuhelníku hra oznámí vítěze
+- TIP: Zapni režim celé obrazovky (F11)

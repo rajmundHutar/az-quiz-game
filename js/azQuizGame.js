@@ -70,12 +70,9 @@ var AzQuizGame = {
 AzQuizGame.start = function () {
     //Starting animation
     $("#help, #lottery, #color_select").hide();
-
     $("#uvod").delay(2000).fadeOut(1000);
-    //$("#uvod").hide();
 
     this.applyColors();
-
     this.bind();
 };
 
@@ -132,6 +129,25 @@ AzQuizGame.bind = function () {
     document.getElementById("close_help_button").addEventListener("click", function () {
         $("#help").fadeOut(500);
     });
+
+    var events = ["resize", "load"];
+    for(i in events) {
+        window.addEventListener(events[i], function() {
+            AzQuizGame.setProperGameHeight();
+        });
+    }
+};
+
+AzQuizGame.setProperGameHeight = function(){
+    var newHeight = window.innerHeight;
+    var newWidth = (newHeight /  600) *  800;
+    if(newWidth > window.innerWidth){
+        newWidth = window.innerWidth;
+        newHeight = (newWidth /  800) *  600;
+    }
+
+    var zoom = newHeight / 600;
+    document.getElementById("body").style.zoom = zoom;
 };
 
 AzQuizGame.selectHex = function (event) {
