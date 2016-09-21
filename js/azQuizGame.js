@@ -1,284 +1,327 @@
-//G_RIGHT a G_LEFT jsou promene pro los
-var G_RIGHT = 0;
-var G_LEFT = 0;
-
-var G_COLOR = new Array();
-G_COLOR[0] = "";
-G_COLOR[1] = "";
-
-var G_NAME = new Array();
-G_NAME[0] = "";
-G_NAME[1] = "";
-
-var G_LOS = false;
-var G_SHAPES = new Array("rect", "hex", "tria", "koso", "circ");
-var G_TIMER = false;
-var G_TIMER_WIN = false;
-var G_SELECTED_NUM = false;
-
-var G_KEY_1 = 16; //16 = levy shift
-var G_KEY_2 = 107; //107 = plus na num klavesnici, 8 = backspace
-
-var neigh = Array();
-neigh[1] = Array(2, 3);
-neigh[2] = Array(1, 3, 4, 5);
-neigh[3] = Array(1, 2, 5, 6);
-neigh[4] = Array(2, 5, 7, 8);
-neigh[5] = Array(2, 3, 4, 6, 8, 9);
-neigh[6] = Array(3, 5, 9, 10);
-neigh[7] = Array(4, 8, 11, 12);
-neigh[8] = Array(4, 5, 7, 9, 12, 13);
-neigh[9] = Array(5, 6, 8, 10, 13, 14);
-neigh[10] = Array(6, 9, 14, 15);
-neigh[11] = Array(7, 12, 16, 17);
-neigh[12] = Array(7, 8, 11, 13, 17, 18);
-neigh[13] = Array(8, 9, 12, 14, 18, 19);
-neigh[14] = Array(9, 10, 13, 15, 19, 20);
-neigh[15] = Array(10, 14, 20, 21);
-neigh[16] = Array(11, 17, 22, 23);
-neigh[17] = Array(11, 12, 16, 18, 23, 24);
-neigh[18] = Array(12, 13, 17, 19, 24, 25);
-neigh[19] = Array(13, 14, 18, 20, 25, 26);
-neigh[20] = Array(14, 15, 19, 21, 26, 27);
-neigh[21] = Array(15, 20, 27, 28);
-neigh[22] = Array(16, 23);
-neigh[23] = Array(16, 17, 22, 24);
-neigh[24] = Array(17, 18, 23, 25);
-neigh[25] = Array(18, 19, 24, 26);
-neigh[26] = Array(19, 20, 25, 27);
-neigh[27] = Array(20, 21, 26);
-neigh[28] = Array(21, 27);
-
-var side = Array();
-side[0] = Array(1, 2, 4, 7, 11, 16, 22);
-side[1] = Array(1, 3, 6, 10, 15, 21, 28);
-side[2] = Array(22, 23, 24, 25, 26, 27, 28);
-
-var done = Array(false, false, false);
-
-var visited = Array();
-var toVisit = Array();
-var blink = true;
-function startPrimGraph(num, color) {
-    clearInterval(G_TIMER_WIN);
-    visited = Array();
-    toVisit = Array();
-    done = Array(false, false, false);
-    primGraph(num, color);
-    if (done[0] && done[1] && done[2]) {
-        G_TIMER_WIN = setInterval(function () {
-            if (blink) {
-                $("img." + color).attr("src", "./obr/hex/hex_grey.png");
-                blink = false;
-            }
-            else {
-                $("img." + color).attr("src", "./obr/hex/hex_" + color + ".png");
-                blink = true;
-            }
-        }, 200);
-    }
-}
-
-
-function primGraph(pos, color) {
-    pos = parseFloat(pos);
-    visited.push(pos);
-    if (side[0].indexOf(pos) != -1) {
-        done[0] = true;
-    }
-    if (side[1].indexOf(pos) != -1) {
-        done[1] = true;
-    }
-    if (side[2].indexOf(pos) != -1) {
-        done[2] = true;
-    }
-    for (var i = 0; i < neigh[pos].length; i++) {
-        var new_neigh = neigh[pos][i];
-        if (toVisit.indexOf(new_neigh) == -1 && visited.indexOf(new_neigh) < 0) {
-            var src = $("img[id=img_" + new_neigh + "]").attr("src");
-            if (src.indexOf(color) != -1) {
-                toVisit.push(parseFloat(new_neigh));
-            }
+var AzQuizGame = {
+    players: [
+        {
+            name: "",
+            color: "grey"
+        },
+        {
+            name: "",
+            color: "grey"
         }
-    }
-    if (toVisit.length > 0) {
-        var next_neigh = toVisit.pop();
-        primGraph(next_neigh, color);
-    }
-}
+    ],
+    settings: {
+        selectedNum: 0,
+        gameStarted: false,
+        lottery: {
+            isRunning: false,
+            left: "",
+            right: "",
+            shapes: ["rect", "hex", "tria", "koso", "circ"],
+            interval: null,
+            keyCodeLeft: 16,
+            keyCodeRight: 107 || 8 //8 is backspace
+        },
+        endGame: {
+            side: [
+                [1, 2, 4, 7, 11, 16, 22],
+                [1, 3, 6, 10, 15, 21, 28],
+                [22, 23, 24, 25, 26, 27, 28]
+            ],
+            done: [false, false, false],
+            visited: [],
+            toVisit: [],
+            blink: true,
+            timerWin: null
+        }
+    },
+    neighbors: [
+        [],
+        [2, 3],
+        [1, 3, 4, 5],
+        [1, 2, 5, 6],
+        [2, 5, 7, 8],
+        [2, 3, 4, 6, 8, 9],
+        [3, 5, 9, 10],
+        [4, 8, 11, 12],
+        [4, 5, 7, 9, 12, 13],
+        [5, 6, 8, 10, 13, 14],
+        [6, 9, 14, 15],
+        [7, 12, 16, 17],
+        [7, 8, 11, 13, 17, 18],
+        [8, 9, 12, 14, 18, 19],
+        [9, 10, 13, 15, 19, 20],
+        [10, 14, 20, 21],
+        [11, 17, 22, 23],
+        [11, 12, 16, 18, 23, 24],
+        [12, 13, 17, 19, 24, 25],
+        [13, 14, 18, 20, 25, 26],
+        [14, 15, 19, 21, 26, 27],
+        [15, 20, 27, 28],
+        [16, 23],
+        [16, 17, 22, 24],
+        [17, 18, 23, 25],
+        [18, 19, 24, 26],
+        [19, 20, 25, 27],
+        [20, 21, 26],
+        [21, 27]
+    ]
+};
 
-$(document).ready(function () {
-    $("div.dialog").hide();
+AzQuizGame.start = function () {
+    //Starting animation
+    $("#help, #lottery, #color_select").hide();
 
-    //UVODNI ANIMACE
-    $("#napoveda").hide();
-    $(".color_select").hide();
-    $("#vyber_barev").hide();
     $("#uvod").delay(2000).fadeOut(1000);
-    $("#vyber_barev").delay(2500).fadeIn(1000);
-    $(".screen#los").hide();
+    //$("#uvod").hide();
 
-    /*$(document).bind("contextmenu",function(e){
-     return false;
-     }); */
+    this.applyColors();
 
-    /*Překryvani cisel na hraci plose*/
-    $("DIV.number").hover(function () {
-        $(this).css("cursor", "hand");
-        var arr = $(this).attr("id").split("_");
-        var image = $("img[id=img_" + arr[1] + "]").attr("src");
-        if (image == "./obr/hex/hex_grey.png") {
-            $("img[id=img_" + arr[1] + "]").attr("src", "./obr/hex/hex_hover.png");
-        }
-    }, function () {
-        var arr = $(this).attr("id").split("_");
-        var image = $("img[id=img_" + arr[1] + "]").attr("src");
-        if (image == "./obr/hex/hex_hover.png") {
-            $("img[id=img_" + arr[1] + "]").attr("src", "./obr/hex/hex_grey.png");
-        }
-    });
+    this.bind();
+};
 
-    /*Vyber otazky*/
-    $("DIV.number").click(function (event) {
-        var poz_top = 10;
-        var poz_left = 10;
-        event.preventDefault();
-        G_SELECTED_NUM = $(this).attr("id").split("_")[1];
-        poz_top = event.pageY + 20;
-        poz_left = event.pageX - ($('.color_select').width() / 2);
-        $('.color_select').css("position", "absolute");
-        $('.color_select').css({top: poz_top, left: poz_left}).fadeIn(500);
-    });
+AzQuizGame.applyColors = function () {
+    var rmClasses = "blue_hex yellow_hex grey_hex green_hex red_hex";
+    $("#img_tym_left").removeClass(rmClasses).addClass(this.players[0].color + "_hex");
+    $("#img_tym_right").removeClass(rmClasses).addClass(this.players[1].color + "_hex");
 
-    $(".color_select img").hover(function () {
-        $(this).css("cursor", "pointer");
-    }, function () {
-        $(this).css("cursor", "normal");
-    }).click(function () {
-        var idcko = $(this).attr("id");
+    $("#tym0").removeClass(rmClasses).addClass(this.players[0].color + "_hex");
+    $("#tym1").removeClass(rmClasses).addClass(this.players[1].color + "_hex");
+};
 
-        $("img[id=img_" + G_SELECTED_NUM + "]").removeClass(G_COLOR[1]).removeClass(G_COLOR[0]);
+AzQuizGame.bind = function () {
+    var numbers = document.getElementsByClassName("number");
+    for (var i = 0; i < numbers.length; i++) {
+        numbers[i].addEventListener("click", function (event) {
+            AzQuizGame.selectHex(event);
+        });
+    }
 
-        if (idcko == "tym0") {
-            $("img[id=img_" + G_SELECTED_NUM + "]").attr("src", "./obr/hex/hex_" + G_COLOR[0] + ".png").addClass(G_COLOR[0]);
-            startPrimGraph(G_SELECTED_NUM, G_COLOR[0]);
-        }
-        else if (idcko == "tym1") {
-            $("img[id=img_" + G_SELECTED_NUM + "]").attr("src", "./obr/hex/hex_" + G_COLOR[1] + ".png").addClass(G_COLOR[1]);
-            startPrimGraph(G_SELECTED_NUM, G_COLOR[1]);
-        }
-        else if (idcko == "dark") {
-            $("img[id=img_" + G_SELECTED_NUM + "]").attr("src", "./obr/hex/hex_dark.png");
-        }
-        else if (idcko == "empty") {
-            $("img[id=img_" + G_SELECTED_NUM + "]").attr("src", "./obr/hex/hex_grey.png");
-        }
-        else if (idcko == "butt_los") {
-            if ($(".screen#los").is(":hidden")) {
-                while (G_LEFT == G_RIGHT)
-                    startLos();
-                $(".screen#los").fadeIn(500);
-                G_LOS = true;
-                G_TIMER = setInterval("startLos()", 700);
-            }
-        }
-        $('.color_select').fadeOut(500);
-    });
+    var colors = document.getElementsByClassName("colors");
+    for (var j = 0; j < colors.length; j++) {
+        colors[j].addEventListener("click", function (event) {
+            AzQuizGame.selectColor(AzQuizGame.settings.selectedNum, event.toElement.id);
+        });
+    }
 
-    /*LOSOVANI*/
-    $(document).keydown(function (e) {
-        if (G_LOS) {
-            if (e.keyCode == G_KEY_1 || e.keyCode == G_KEY_2) {
-                clearTimeout(G_TIMER);
+    document.addEventListener("keydown", function (e) {
+        if (AzQuizGame.settings.lottery.isRunning) {
+            if (e.keyCode == AzQuizGame.settings.lottery.keyCodeLeft || e.keyCode == AzQuizGame.settings.lottery.keyCodeRight) {
                 e.preventDefault();
-                if (G_LEFT == G_RIGHT) {
-                    if (e.keyCode == G_KEY_1) {
-                        $("#los_leva").html("<img src=\"./obr/" + G_SHAPES[G_LEFT] + "/" + G_SHAPES[G_LEFT] + "_" + G_COLOR[0] + ".png\">");
-                    }
-                    else if (e.keyCode == G_KEY_2) {
-                        $("#los_prava").html("<img src=\"./obr/" + G_SHAPES[G_RIGHT] + "/" + G_SHAPES[G_RIGHT] + "_" + G_COLOR[1] + ".png\">");
-                    }
-                }
-                else {
-                    if (e.keyCode == G_KEY_1) {
-                        $("#los_prava").html("<img src=\"./obr/" + G_SHAPES[G_RIGHT] + "/" + G_SHAPES[G_RIGHT] + "_" + G_COLOR[1] + ".png\">");
-                    }
-                    else if (e.keyCode == G_KEY_2) {
-                        $("#los_leva").html("<img src=\"./obr/" + G_SHAPES[G_LEFT] + "/" + G_SHAPES[G_LEFT] + "_" + G_COLOR[0] + ".png\">");
-                    }
-                }
-                $(".screen#los").delay(2000).fadeOut(500, function () {
-                    $('.color_select').fadeIn(500);
-                    startLos();
-                });
+                AzQuizGame.lotteryKeyboardClick(e.keyCode);
             }
-            G_LOS = false;
         }
     });
 
+    document.getElementById("img_tym_left").addEventListener("click", function () {
+        AzQuizGame.changePlayerColor(0);
+    });
+    document.getElementById("img_tym_right").addEventListener("click", function () {
+        AzQuizGame.changePlayerColor(1);
+    });
+    document.getElementById("name_tym_left").addEventListener("keyup", function (ele) {
+        AzQuizGame.changePlayerName(0, ele.target.innerText);
+    });
+    document.getElementById("name_tym_right").addEventListener("keyup", function (ele) {
+        AzQuizGame.changePlayerName(1, ele.target.innerText);
+    });
 
-    /*Zacatek hry*/
-    $("input#play").click(function () {
-        var tym = new Array();
-        tym[1] = $("input.tymy[name=tym1]").val();
-        tym[2] = $("input.tymy[name=tym2]").val();
-        tym[3] = $("input.tymy[name=tym3]").val();
-        tym[4] = $("input.tymy[name=tym4]").val();
+    document.getElementById("help_button").addEventListener("click", function () {
+        $("#help").fadeIn(500);
+    });
 
-        var count = 0;
-        if (tym[1] != "")
-            count++;
-        if (tym[2] != "")
-            count++;
-        if (tym[3] != "")
-            count++;
-        if (tym[4] != "")
-            count++;
-        if (count < 2) {
-            alert("Málo týmů. Zadej jména dvou týmů.");
+    document.getElementById("close_help_button").addEventListener("click", function () {
+        $("#help").fadeOut(500);
+    });
+};
+
+AzQuizGame.selectHex = function (event) {
+    if (!this.checkSetup()) {
+        return;
+    }
+    this.settings.selectedNum = event.toElement.id.split("_")[1];
+    var colorSelect = $('#color_select');
+    colorSelect.css({
+        top: event.pageY + 20,
+        left: event.pageX - (colorSelect.width() / 2)
+    }).fadeIn(200);
+};
+
+AzQuizGame.checkSetup = function () {
+    if (this.players[0].color === "grey" || this.players[1].color === "grey") {
+        alert("Vyber barvu týmům / hráčům");
+        return false;
+    }
+    if (this.players[0].color === this.players[1].color) {
+        alert("Vyber rozdílnou barvu týmům / hráčům");
+        return false;
+    }
+    if (this.players[0].name == "" || this.players[1].name == "") {
+        alert("Nastav jména týmů / hráčů");
+        return false;
+    }
+    this.settings.gameStarted = true;
+    return true;
+};
+
+AzQuizGame.changePlayerColor = function (player) {
+    if (!this.settings.gameStarted) {
+        var currentColor = this.players[player].color;
+        var newColor;
+        switch (currentColor) {
+            case "blue":
+                newColor = "red";
+                break;
+            case "red":
+                newColor = "green";
+                break;
+            case "green":
+                newColor = "yellow";
+                break;
+            default:
+                newColor = "blue";
         }
-        else if (count > 2) {
-            alert("Moc týmů. Zadej jména dvou týmů.");
+        this.players[player].color = newColor;
+
+        this.applyColors();
+    }
+};
+
+AzQuizGame.changePlayerName = function (player, name) {
+    this.players[player].name = name;
+};
+
+AzQuizGame.selectColor = function (id, action) {
+    var $div = $("#div_" + id);
+    $div.removeClass(this.players[0].color + "_hex " + this.players[1].color + "_hex dark_hex");
+
+    if (action == "tym0") {
+        $div.addClass(this.players[0].color + "_hex");
+        this.startPrimGraph(id, this.players[0].color);
+    }
+    else if (action == "tym1") {
+        $div.addClass(this.players[1].color + "_hex");
+        this.startPrimGraph(id, this.players[1].color);
+    }
+    else if (action == "dark") {
+        $div.addClass("dark_hex");
+    }
+    else if (action == "butt_los") {
+        this.startLottery();
+    }
+    $('#color_select').fadeOut(500);
+};
+
+
+AzQuizGame.startLottery = function () {
+    this.settings.lottery.isRunning = true;
+    $("#lottery").fadeIn(500);
+    AzQuizGame.lottery();
+    this.settings.lottery.interval = setInterval(function () {
+        AzQuizGame.lottery();
+    }, 700);
+};
+
+AzQuizGame.lottery = function () {
+    var max = 4, min = 0;
+    this.settings.lottery.left = Math.floor(Math.random() * (max - min + 1)) + min;
+    this.settings.lottery.right = 4 - Math.floor(Math.random() * (max - min + 1)) + min;
+    $("#los_leva").html("<img src=\"./obr/" + this.settings.lottery.shapes[this.settings.lottery.left] + "/" + this.settings.lottery.shapes[this.settings.lottery.left] + "_grey.png\">");
+    $("#los_prava").html("<img src=\"./obr/" + this.settings.lottery.shapes[this.settings.lottery.right] + "/" + this.settings.lottery.shapes[this.settings.lottery.right] + "_grey.png\">");
+};
+
+AzQuizGame.lotteryKeyboardClick = function (keyCode) {
+    this.settings.lottery.isRunning = false;
+    clearInterval(this.settings.lottery.interval);
+
+    if (this.settings.lottery.left == this.settings.lottery.right) {
+        if (keyCode == this.settings.lottery.keyCodeLeft) {
+            $("#los_leva").html("<img src=\"./obr/" + this.settings.lottery.shapes[this.settings.lottery.left] + "/" + this.settings.lottery.shapes[this.settings.lottery.left] + "_" + this.players[0].color + ".png\">");
+            this.selectColor(this.settings.selectedNum, "tym0");
+        }
+        else if (keyCode == this.settings.lottery.keyCodeRight) {
+            $("#los_prava").html("<img src=\"./obr/" + this.settings.lottery.shapes[this.settings.lottery.right] + "/" + this.settings.lottery.shapes[this.settings.lottery.right] + "_" + this.players[1].color + ".png\">");
+            this.selectColor(this.settings.selectedNum, "tym1");
+        }
+    }
+    else {
+        if (keyCode == this.settings.lottery.keyCodeLeft) {
+            $("#los_prava").html("<img src=\"./obr/" + this.settings.lottery.shapes[this.settings.lottery.right] + "/" + this.settings.lottery.shapes[this.settings.lottery.right] + "_" + this.players[1].color + ".png\">");
+            this.selectColor(this.settings.selectedNum, "tym1");
+        }
+        else if (keyCode == this.settings.lottery.keyCodeRight) {
+            $("#los_leva").html("<img src=\"./obr/" + this.settings.lottery.shapes[this.settings.lottery.left] + "/" + this.settings.lottery.shapes[this.settings.lottery.left] + "_" + this.players[0].color + ".png\">");
+            this.selectColor(this.settings.selectedNum, "tym0");
+        }
+    }
+
+    $("#lottery").delay(1000).fadeOut(500);
+};
+
+AzQuizGame.startPrimGraph = function (num, color) {
+    this.settings.endGame.done = [false, false, false];
+    this.settings.endGame.visited = [];
+    this.settings.endGame.toVisit = [];
+    clearInterval(this.settings.endGame.timerWin);
+
+    this.primGraph(num, color);
+
+    if (this.settings.endGame.done[0] && this.settings.endGame.done[1] && this.settings.endGame.done[2]) {
+        this.endGame(color);
+    }
+};
+
+AzQuizGame.endGame = function (winColor) {
+    if (this.players[0].color === winColor) {
+        alert("Vyhrál tým " + this.players[0].name);
+    } else if (this.players[1].color === winColor) {
+        alert("Vyhrál tým " + this.players[1].name);
+    }
+    var list = document.getElementsByClassName(winColor + "_hex");
+    var winningIds = [];
+    for (var i = 0; i < list.length; i++) {
+        if (list[i].id.slice(0, 4) == "div_") {
+            winningIds.push("#" + list[i].id);
+        }
+    }
+
+    this.settings.endGame.timerWin = setInterval(function () {
+        if (AzQuizGame.settings.endGame.blink) {
+            $(winningIds.join(", ")).removeClass(winColor + "_hex");
+            AzQuizGame.settings.endGame.blink = false;
         }
         else {
-            for (var i = 1; i <= 4; i++) {
-                if (G_COLOR[0] == "" && G_COLOR[1] != "" && tym[i] != "") {
-                    G_COLOR[0] = $("input.tymy[name=tym" + i + "]").attr("data-color");
-                    G_NAME[0] = $("input.tymy[name=tym" + i + "]").val();
-                }
-                if (G_COLOR[1] == "" && tym[i] != "") {
-                    G_COLOR[1] = $("input.tymy[name=tym" + i + "]").attr("data-color");
-                    G_NAME[1] = $("input.tymy[name=tym" + i + "]").val();
-                }
-            }
-            $("#vyber_barev").fadeOut(500);
-
-            $("img#img_tym_right").attr("src", "./obr/hex/hex_" + G_COLOR[1] + ".png");
-            $("img#img_tym_left").attr("src", "./obr/hex/hex_" + G_COLOR[0] + ".png");
-            $("div.playground #tym_right span").html(G_NAME[1]);
-            $("div.playground #tym_left span").html(G_NAME[0]);
-
-            $("div.color_select img#tym0").attr("src", "./obr/hex/hex_" + G_COLOR[0] + ".png");
-            $("div.color_select img#tym1").attr("src", "./obr/hex/hex_" + G_COLOR[1] + ".png");
-
-            $("div.playground .team").fadeIn(500);
+            $(winningIds.join(", ")).addClass(winColor + "_hex");
+            AzQuizGame.settings.endGame.blink = true;
         }
-    });
-    $("div#vyber_barev input.napoveda_button").click(function () {
-        $("#vyber_barev").fadeOut(500);
-        $("#napoveda").fadeIn(500);
-    });
-    $("div#napoveda input.napoveda_button").click(function () {
-        $("#vyber_barev").fadeIn(500);
-        $("#napoveda").fadeOut(500);
-    });
-});
+    }, 200);
+};
 
-/*generovani nahodnych obrazku*/
-function startLos() {
-    var max = 4, min = 0;
-    G_LEFT = Math.floor(Math.random() * (max - min + 1)) + min;
-    G_RIGHT = 4 - Math.floor(Math.random() * (max - min + 1)) + min;
-    $("#los_leva").html("<img src=\"./obr/" + G_SHAPES[G_LEFT] + "/" + G_SHAPES[G_LEFT] + "_grey.png\">");
-    $("#los_prava").html("<img src=\"./obr/" + G_SHAPES[G_RIGHT] + "/" + G_SHAPES[G_RIGHT] + "_grey.png\">");
-}
+
+AzQuizGame.primGraph = function (pos, color) {
+    pos = parseFloat(pos);
+    this.settings.endGame.visited.push(pos);
+    if (this.settings.endGame.side[0].indexOf(pos) != -1) {
+        this.settings.endGame.done[0] = true;
+    }
+    if (this.settings.endGame.side[1].indexOf(pos) != -1) {
+        this.settings.endGame.done[1] = true;
+    }
+    if (this.settings.endGame.side[2].indexOf(pos) != -1) {
+        this.settings.endGame.done[2] = true;
+    }
+    for (var i = 0; i < this.neighbors[pos].length; i++) {
+        var new_neigh = this.neighbors[pos][i];
+        if (this.settings.endGame.toVisit.indexOf(new_neigh) == -1 && this.settings.endGame.visited.indexOf(new_neigh) < 0) {
+            var src = $("div#div_" + new_neigh).attr("class");
+            if (src.indexOf(color) != -1) {
+                this.settings.endGame.toVisit.push(parseFloat(new_neigh));
+            }
+        }
+    }
+    if (this.settings.endGame.toVisit.length > 0) {
+        var next_neigh = this.settings.endGame.toVisit.pop();
+        this.primGraph(next_neigh, color);
+    }
+};
+
+AzQuizGame.start();

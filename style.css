@@ -1,211 +1,221 @@
-div.number{
-    border:0px solid black;
-    position:absolute;
-    width:80px;
-    height:80px;
+div.number {
+    position: absolute;
+    width: 80px;
+    height: 80px;
     text-align: center;;
-    vertical-align: middle;
     font-size: 30pt;
-    padding-top:25px;
+    padding-top: 25px;
+    background: url('./obr/hex/hex_grey.png') no-repeat;
+    background-size: 80px 89px;
 }
-img.hex{
-    position:absolute;
-    width:80px;
+div.number:hover{
+    cursor: pointer;
+    background: url('./obr/hex/hex_hover.png') no-repeat;
+    background-size: 80px 89px;
 }
-div.screen{
-	position:absolute;
-    top:0px;
-    width:800px;
-    height:600px;
-    left:50%;
-    margin-left:-400px;
-    background-color: rgba(160,160,160,0.6);
+
+.blue_hex{
+    background-image: url('./obr/hex/hex_blue.png') !important;
+}
+
+.green_hex{
+    background-image: url('./obr/hex/hex_gree.png') !important;
+}
+
+.red_hex{
+    background-image: url('./obr/hex/hex_red.png') !important;
+}
+
+.yellow_hex{
+    background-image: url('./obr/hex/hex_yell.png') !important;
+}
+
+.grey_hex{
+    background-image: url('./obr/hex/hex_grey.png') !important;
+}
+
+.dark_hex{
+    background-image: url('./obr/hex/hex_dark.png') !important;
+}
+.lottery_hex{
+    background-image: url('./obr/hex/hex_grey_los.png') !important;
+}
+
+div.screen {
+    position: absolute;
+    top: 0;
+    width: 800px;
+    height: 600px;
+    left: 50%;
+    margin-left: -400px;
+    background-color: rgba(160, 160, 160, 0.6);
 }
 
 /*HRACI PLOCHA*/
-div.playground{
-	border:0px solid black;
-	width:800px;
-	height:560px;
-	position:absolute;
-	left:50%;
-	margin-left:-400px;
-	top:40px;
-}
-
-div.dialog{
-	position:absolute;
-	width:250px;
-	height:60px;
-	left:50%;
-	margin-left:-400px;
-	top:150px;
-    background-color: rgba(160,160,160,0.6);
-	text-align:center;
-	padding-top:40px;
+div#playground {
+    width: 800px;
+    height: 600px;
 }
 
 /*NAZVY TYMU*/
-div.playground .team{
-	position:absolute;
-	top:0px;
-	height:50px;
-	width:250px;
-}
-div.playground #tym_left{
-	left:0px;
-}
-div.playground #tym_right{
-	right:0px;
-}
-div.playground #tym_left span{
-	position:absolute;
-	left:0px;
-	padding-left:80px;
-	font-size:30pt;
-}
-div.playground #tym_right span{
-	position:absolute;
-	right:0px;
-	padding-right:80px;
-	font-size:30pt;
-}
-div.playground #img_tym_left{
-	position:absolute;
-	left:0px;
-	width:60px;
-}
-div.playground #img_tym_right{
-	position:absolute;
-	right:0px;
-	width:60px;
-}
-div.playground input#butt_los{
-	position:absolute;
-	top:100px;
-	left:600px;
+div#playground .team {
+    position: absolute;
+    top: 20px;
+    height: 50px;
+    width: 250px;
 }
 
-
-
-div.color_select{
-	position:absolute;
-	background-color: rgba(160,160,160,0.6);
-	padding:10px 5px 5px 5px;
-}
-div.color_select img{
-	width: 30px;
+div#playground #tym_left {
+    left: 0;
 }
 
+div#playground #tym_right {
+    right: 0;
+    text-align: right;
+}
+
+div#playground #tym_left .name {
+    margin-left: 80px;
+    font-size: 30pt;
+}
+
+div#playground #tym_right .name {
+    margin-right: 80px;
+    font-size: 30pt;
+}
+
+div#playground #img_tym_left {
+    float: left;
+    width: 60px;
+    height: 67px;
+    background-size: 60px 67px;
+    margin-left: 10px;
+}
+
+div#playground #img_tym_right {
+    float: right;
+    width: 60px;
+    height: 67px;
+    background-size: 60px 67px;
+    margin-right: 10px;
+}
+
+div#color_select {
+    position: absolute;
+    background-color: rgba(160, 160, 160, 0.6);
+    padding: 10px 5px 5px 5px;
+}
+
+div#color_select div {
+    margin: 2px;
+    width: 30px;
+    height: 30px;
+    float: left;
+    background-size: 30px 30px;
+}
+div#color_select div:hover{
+    cursor: pointer;
+}
 
 /*LOSOVANI*/
-div#los{
-    position:absolute;
-	top:0px;
-    width:800px;
-    height:600px;
-    border:0px solid black;
-    left:50%;
-    margin-left:-400px;
-}
-div#los_leva,div#los_prava{
-    font-size:50pt;
-    position:absolute;
-	top:150px;
-    width:210px;
-    height:220px;
-    border:0px solid black;
-    padding:30px 0px 0px 40px;
+div#los {
+    position: absolute;
+    top: 0;
+    width: 800px;
+    height: 600px;
+    border: 0 solid black;
+    left: 50%;
+    margin-left: -400px;
 }
 
-/*Otazka*/
-div.question{
-    position:absolute;
-    top:200px;
-    width:400px;
-    height:200px;
-    border:1px solid green;
-    left:50%;
-    margin-left:-200px;
+div#los_leva, div#los_prava {
+    font-size: 50pt;
+    position: absolute;
+    top: 150px;
+    width: 210px;
+    height: 220px;
+    border: 0 solid black;
+    padding: 30px 0px 0px 40px;
 }
 
-
-/*Vyber barev*/
-div#vyber_barev .nadpis{
-	font-size:20pt;
-	margin-top:20px;
-	text-align:center;
-}
-div#vyber_barev input.tymy{
-	position:absolute;
-	font-size:20pt;
-	left: 130px;
-}
-div#vyber_barev input#play{
-	position:absolute;
-	font-size:20pt;
-	left: 500px;
-	top: 480px;
-}
-div#vyber_barev input.napoveda_button{
-	position:absolute;
-	font-size:20pt;
-	left: 600px;
-	top: 480px;
-}
-div#vyber_barev img{
-    position:absolute;
-    width:60px;
-    left:50px;
-}
 
 
 /*Nápověda*/
-div#napoveda{
+div#help {
 
 }
-div#napoveda div.text{
-	margin:50px;
+
+div#help div.text {
+    margin: 50px;
 }
-div#napoveda input.napoveda_button{
-	position:absolute;
-	font-size:20pt;
-	left: 600px;
-	top: 480px;
+
+div#help #close_help_button {
+    position: absolute;
+    font-size: 20pt;
+    left: 600px;
+    top: 480px;
 }
 
 /*Úvod*/
-div#uvod{
+div#uvod {
 
 }
-div#uvod div.nadpis{
-font-weight:bold;
-font-size:100pt;
-font-family: Arial, sans-serif;
-}
-div#uvod .nadpis .az{
-margin:80px 0px 0px 170px;
-color:rgb(241,145,6);
--webkit-text-stroke: 2px black;
-}
-div#uvod .nadpis .kviz{
-margin:-20px 0px 0px 340px;
-color:rgb(88,187,206);
--webkit-text-stroke: 2px black;
-}
-div#uvod div.jmeno{
-font-weight: 12pt;
-text-align:right;
-position:absolute;
-right: 30px;
-bottom:20px;
-}
-div#uvod div.jmeno a{
-color:black;
-font-weight:bold;
-text-decoration:underline;
-}
-div#uvod div.jmeno a:hover{
-text-decoration:none;
+
+div#uvod div.nadpis {
+    font-weight: bold;
+    font-size: 100pt;
+    font-family: Arial, sans-serif;
 }
 
+div#uvod .nadpis .az {
+    margin: 80px 0px 0px 170px;
+    color: rgb(241, 145, 6);
+    -webkit-text-stroke: 2px black;
+}
+
+div#uvod .nadpis .kviz {
+    margin: -20px 0px 0px 340px;
+    color: rgb(88, 187, 206);
+    -webkit-text-stroke: 2px black;
+}
+
+div#uvod div.jmeno {
+    font-weight: 12pt;
+    text-align: right;
+    position: absolute;
+    right: 30px;
+    bottom: 20px;
+}
+
+div#uvod div.jmeno a {
+    color: black;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+div#uvod div.jmeno a:hover {
+    text-decoration: none;
+}
+
+#help_button{
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.button{
+    color: #fff;
+    background-color: #337ab7;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #2e6da4;
+    border-radius: 4px;
+}
+
+.button:hover{
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
+}
