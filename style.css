@@ -48,7 +48,7 @@ div.screen {
     height: 600px;
     left: 50%;
     margin-left: -400px;
-    background-color: rgba(160, 160, 160, 0.6);
+    background-color: rgba(160, 160, 160, 0.85);
 }
 
 /*HRACI PLOCHA*/
@@ -146,14 +146,14 @@ div#help {
 }
 
 div#help div.text {
-    margin: 50px;
+    font-size: 150%;
+    margin: 100px 15%;
 }
 
 div#help #close_help_button {
     position: absolute;
-    font-size: 20pt;
-    left: 600px;
-    top: 480px;
+    right: 37px;
+    bottom: 20px;
 }
 
 /*Úvod*/
@@ -180,10 +180,9 @@ div#uvod .nadpis .kviz {
 }
 
 div#uvod div.jmeno {
-    font-weight: 12pt;
-    text-align: right;
+    text-align: left;
     position: absolute;
-    right: 30px;
+    left: 30px;
     bottom: 20px;
 }
 
