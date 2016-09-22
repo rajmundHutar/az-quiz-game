@@ -12,6 +12,7 @@ var AzQuizGame = {
     settings: {
         selectedNum: 0,
         gameStarted: false,
+        zoom: 1,
         lottery: {
             isRunning: false,
             left: "",
@@ -146,8 +147,8 @@ AzQuizGame.setProperGameHeight = function(){
         newHeight = (newWidth /  800) *  600;
     }
 
-    var zoom = newHeight / 600;
-    document.getElementById("body").style.zoom = zoom;
+    this.settings.zoom = newHeight / 600;
+    document.getElementById("body").style.zoom = this.settings.zoom;
 };
 
 AzQuizGame.selectHex = function (event) {
@@ -157,8 +158,8 @@ AzQuizGame.selectHex = function (event) {
     this.settings.selectedNum = event.toElement.id.split("_")[1];
     var colorSelect = $('#color_select');
     colorSelect.css({
-        top: event.pageY + 20,
-        left: event.pageX - (colorSelect.width() / 2)
+        top: (event.pageY  / this.settings.zoom) + 20,
+        left: (event.pageX / this.settings.zoom) - (colorSelect.width() / 2)
     }).fadeIn(200);
 };
 
@@ -207,22 +208,23 @@ AzQuizGame.changePlayerName = function (player, name) {
 };
 
 AzQuizGame.selectColor = function (id, action) {
-    var $div = $("#div_" + id);
-    $div.removeClass(this.players[0].color + "_hex " + this.players[1].color + "_hex dark_hex");
-
-    if (action == "tym0") {
-        $div.addClass(this.players[0].color + "_hex");
-        this.startPrimGraph(id, this.players[0].color);
-    }
-    else if (action == "tym1") {
-        $div.addClass(this.players[1].color + "_hex");
-        this.startPrimGraph(id, this.players[1].color);
-    }
-    else if (action == "dark") {
-        $div.addClass("dark_hex");
-    }
-    else if (action == "butt_los") {
+    if (action == "butt_los") {
         this.startLottery();
+    } else {
+        var $div = $("#div_" + id);
+        $div.removeClass(this.players[0].color + "_hex " + this.players[1].color + "_hex dark_hex");
+
+        if (action == "tym0") {
+            $div.addClass(this.players[0].color + "_hex");
+            this.startPrimGraph(id, this.players[0].color);
+        }
+        else if (action == "tym1") {
+            $div.addClass(this.players[1].color + "_hex");
+            this.startPrimGraph(id, this.players[1].color);
+        }
+        else if (action == "dark") {
+            $div.addClass("dark_hex");
+        }
     }
     $('#color_select').fadeOut(500);
 };
