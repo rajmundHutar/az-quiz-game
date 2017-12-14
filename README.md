@@ -5,8 +5,7 @@ You can test it here: http://www.rajmund.cz/projects/az-kviz/
 
 Or you can download it for offline usage. Just downlod as zip, upack and run index.html in your browser.
 
-
-##Česky
+## Česky
 Aplikace pro hraní AZ Kvízu. Zahrajte si AZ Kvíz s vlastníma otázkama, dokonce můžete losovat o ztracená pole.
 
 K vyzkoušení zde: http://www.rajmund.cz/projects/az-kviz/
