@@ -19,8 +19,8 @@ var AzQuizGame = {
             right: "",
             shapes: ["rect", "hex", "tria", "koso", "circ"],
             interval: null,
-            keyCodeLeft: 16,
-            keyCodeRight: 107 || 8 //8 is backspace
+            keyCodeLeft: ['ShiftLeft'],
+            keyCodeRight: ['Backspace', 'NumpadAdd'],
         },
         endGame: {
             side: [
@@ -97,16 +97,17 @@ AzQuizGame.bind = function () {
     var colors = document.getElementsByClassName("colors");
     for (var j = 0; j < colors.length; j++) {
         colors[j].addEventListener("click", function (event) {
-            AzQuizGame.selectColor(AzQuizGame.settings.selectedNum, event.toElement.id);
+            AzQuizGame.selectColor(AzQuizGame.settings.selectedNum, event.target.id);
         });
     }
 
     document.addEventListener("keydown", function (e) {
-        if (AzQuizGame.settings.lottery.isRunning) {
-            if (e.keyCode == AzQuizGame.settings.lottery.keyCodeLeft || e.keyCode == AzQuizGame.settings.lottery.keyCodeRight) {
-                e.preventDefault();
-                AzQuizGame.lotteryKeyboardClick(e.keyCode);
-            }
+        if (!AzQuizGame.settings.lottery.isRunning) {
+            return;
+        }
+        if (AzQuizGame.settings.lottery.keyCodeLeft.includes(e.code) || AzQuizGame.settings.lottery.keyCodeRight.includes(e.code)) {
+            e.preventDefault();
+            AzQuizGame.lotteryKeyboardClick(e.code);
         }
     });
 
@@ -132,19 +133,19 @@ AzQuizGame.bind = function () {
     });
 
     var events = ["resize", "load"];
-    for(i in events) {
-        window.addEventListener(events[i], function() {
+    for (i in events) {
+        window.addEventListener(events[i], function () {
             AzQuizGame.setProperGameHeight();
         });
     }
 };
 
-AzQuizGame.setProperGameHeight = function(){
+AzQuizGame.setProperGameHeight = function () {
     var newHeight = window.innerHeight;
-    var newWidth = (newHeight /  600) *  800;
-    if(newWidth > window.innerWidth){
+    var newWidth = (newHeight / 600) * 800;
+    if (newWidth > window.innerWidth) {
         newWidth = window.innerWidth;
-        newHeight = (newWidth /  800) *  600;
+        newHeight = (newWidth / 800) * 600;
     }
 
     this.settings.zoom = newHeight / 600;
@@ -155,10 +156,10 @@ AzQuizGame.selectHex = function (event) {
     if (!this.checkSetup()) {
         return;
     }
-    this.settings.selectedNum = event.toElement.id.split("_")[1];
+    this.settings.selectedNum = event.target.id.split("_")[1];
     var colorSelect = $('#color_select');
     colorSelect.css({
-        top: (event.pageY  / this.settings.zoom) + 20,
+        top: (event.pageY / this.settings.zoom) + 20,
         left: (event.pageX / this.settings.zoom) - (colorSelect.width() / 2)
     }).fadeIn(200);
 };
@@ -172,7 +173,7 @@ AzQuizGame.checkSetup = function () {
         alert("Vyber rozdílnou barvu týmům / hráčům");
         return false;
     }
-    if (this.players[0].name == "" || this.players[1].name == "") {
+    if (this.players[0].name === "" || this.players[1].name === "") {
         alert("Nastav jména týmů / hráčů");
         return false;
     }
@@ -208,21 +209,19 @@ AzQuizGame.changePlayerName = function (player, name) {
 };
 
 AzQuizGame.selectColor = function (id, action) {
-    if (action == "butt_los") {
+    if (action === "butt_los") {
         this.startLottery();
     } else {
         var $div = $("#div_" + id);
         $div.removeClass(this.players[0].color + "_hex " + this.players[1].color + "_hex dark_hex");
 
-        if (action == "tym0") {
+        if (action === "tym0") {
             $div.addClass(this.players[0].color + "_hex");
             this.startPrimGraph(id, this.players[0].color);
-        }
-        else if (action == "tym1") {
+        } else if (action === "tym1") {
             $div.addClass(this.players[1].color + "_hex");
             this.startPrimGraph(id, this.players[1].color);
-        }
-        else if (action == "dark") {
+        } else if (action === "dark") {
             $div.addClass("dark_hex");
         }
     }
@@ -251,22 +250,19 @@ AzQuizGame.lotteryKeyboardClick = function (keyCode) {
     this.settings.lottery.isRunning = false;
     clearInterval(this.settings.lottery.interval);
 
-    if (this.settings.lottery.left == this.settings.lottery.right) {
-        if (keyCode == this.settings.lottery.keyCodeLeft) {
+    if (this.settings.lottery.left === this.settings.lottery.right) {
+        if (this.settings.lottery.keyCodeLeft.includes(keyCode)) {
             $("#los_leva").html("<img src=\"./obr/" + this.settings.lottery.shapes[this.settings.lottery.left] + "/" + this.settings.lottery.shapes[this.settings.lottery.left] + "_" + this.players[0].color + ".png\">");
             this.selectColor(this.settings.selectedNum, "tym0");
-        }
-        else if (keyCode == this.settings.lottery.keyCodeRight) {
+        } else if (this.settings.lottery.keyCodeRight.includes(keyCode)) {
             $("#los_prava").html("<img src=\"./obr/" + this.settings.lottery.shapes[this.settings.lottery.right] + "/" + this.settings.lottery.shapes[this.settings.lottery.right] + "_" + this.players[1].color + ".png\">");
             this.selectColor(this.settings.selectedNum, "tym1");
         }
-    }
-    else {
-        if (keyCode == this.settings.lottery.keyCodeLeft) {
+    } else {
+        if (this.settings.lottery.keyCodeLeft.includes(keyCode)) {
             $("#los_prava").html("<img src=\"./obr/" + this.settings.lottery.shapes[this.settings.lottery.right] + "/" + this.settings.lottery.shapes[this.settings.lottery.right] + "_" + this.players[1].color + ".png\">");
             this.selectColor(this.settings.selectedNum, "tym1");
-        }
-        else if (keyCode == this.settings.lottery.keyCodeRight) {
+        } else if (this.settings.lottery.keyCodeRight.includes(keyCode)) {
             $("#los_leva").html("<img src=\"./obr/" + this.settings.lottery.shapes[this.settings.lottery.left] + "/" + this.settings.lottery.shapes[this.settings.lottery.left] + "_" + this.players[0].color + ".png\">");
             this.selectColor(this.settings.selectedNum, "tym0");
         }
@@ -297,7 +293,7 @@ AzQuizGame.endGame = function (winColor) {
     var list = document.getElementsByClassName(winColor + "_hex");
     var winningIds = [];
     for (var i = 0; i < list.length; i++) {
-        if (list[i].id.slice(0, 4) == "div_") {
+        if (list[i].id.slice(0, 4) === "div_") {
             winningIds.push("#" + list[i].id);
         }
     }
@@ -306,8 +302,7 @@ AzQuizGame.endGame = function (winColor) {
         if (AzQuizGame.settings.endGame.blink) {
             $(winningIds.join(", ")).removeClass(winColor + "_hex");
             AzQuizGame.settings.endGame.blink = false;
-        }
-        else {
+        } else {
             $(winningIds.join(", ")).addClass(winColor + "_hex");
             AzQuizGame.settings.endGame.blink = true;
         }
@@ -318,20 +313,20 @@ AzQuizGame.endGame = function (winColor) {
 AzQuizGame.primGraph = function (pos, color) {
     pos = parseFloat(pos);
     this.settings.endGame.visited.push(pos);
-    if (this.settings.endGame.side[0].indexOf(pos) != -1) {
+    if (this.settings.endGame.side[0].indexOf(pos) !== -1) {
         this.settings.endGame.done[0] = true;
     }
-    if (this.settings.endGame.side[1].indexOf(pos) != -1) {
+    if (this.settings.endGame.side[1].indexOf(pos) !== -1) {
         this.settings.endGame.done[1] = true;
     }
-    if (this.settings.endGame.side[2].indexOf(pos) != -1) {
+    if (this.settings.endGame.side[2].indexOf(pos) !== -1) {
         this.settings.endGame.done[2] = true;
     }
     for (var i = 0; i < this.neighbors[pos].length; i++) {
         var new_neigh = this.neighbors[pos][i];
-        if (this.settings.endGame.toVisit.indexOf(new_neigh) == -1 && this.settings.endGame.visited.indexOf(new_neigh) < 0) {
+        if (this.settings.endGame.toVisit.indexOf(new_neigh) === -1 && this.settings.endGame.visited.indexOf(new_neigh) < 0) {
             var src = $("div#div_" + new_neigh).attr("class");
-            if (src.indexOf(color) != -1) {
+            if (src.indexOf(color) !== -1) {
                 this.settings.endGame.toVisit.push(parseFloat(new_neigh));
             }
         }
